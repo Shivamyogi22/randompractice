@@ -125,7 +125,7 @@ class SinglyLinkedList {
     public int search(int target) {
 		Node temp = head;
 		int index =0;
-		if(temp !=null) {
+		while(temp !=null) {
 			if(temp.data == target) {
 				return index;
 			}
@@ -135,6 +135,20 @@ class SinglyLinkedList {
 		
 		return -1;
 	}
+
+    public void update(int oldData, int newData){
+        int index = search(oldData);
+        if(index == -1){
+            System.out.print("working.........");
+        }
+        Node temp = head;
+        for(int i = 0; i < index; i++){
+            temp = temp.next;
+
+        }
+        temp.data = newData;
+    }
+
     // Display Linked List
     public void display() {
         if (head == null) {
@@ -178,13 +192,17 @@ public class LinkedList {
         int val = 30;
         int result = list.search(val);
         
-        if(result != -1) {
-            System.out.println("Value " + val + " found at Index: " + result);
-        } else {
-            System.out.println("Value " + val + " not found");
-        }
+        // if(result != -1) {
+        //     System.out.println("Value " + val + " found at Index: " + result);
+        // } else {
+        //     System.out.println("Value " + val + " not found");
+        // }
 
-        // Searching Test (Not Found)
-        System.out.println("Searching 100: Index " + list.search(100)); // Should print -1
+        // // Searching Test (Not Found)
+        // System.out.println("Searching 100: Index " + list.search(100)); // Should print -1
+        System.out.println(list.search(40));
+
+        list.update(40, 100);
+        list.display();
     }
 }
