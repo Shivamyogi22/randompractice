@@ -69,3 +69,81 @@ public class EmergencyAdmissionServiceImpl implements EmergencyAdmissionService 
 	}
 
 }
+
+
+
+
+
+
+
+
+
+
+package com.airport.service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+
+import com.airport.dto.PassengerEntryDTO;
+import com.airport.dto.PassengerEntryRespDTO;
+import com.airport.entities.EntryStatus;
+import com.airport.entities.PassengerEntry;
+import com.airport.exceptions.ResourceNotFoundException;
+import com.airport.repository.PassengerEntryRepo;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class PassengerEntryServiceImply implements PassengerEntryService {
+	
+	private final PassengerEntryRepo repo;
+	private final ModelMapper mapper;
+
+	@Override
+	public PassengerEntryRespDTO addEntry(PassengerEntryDTO dto) {
+		PassengerEntry entry = mapper.map(dto, PassengerEntry.class);
+		PassengerEntry saved = repo.save(entry);
+		return mapper.map(saved, PassengerEntryRespDTO.class);
+	}
+
+	@Override
+	public PassengerEntryRespDTO updateEntry(Long id, PassengerEntryDTO dto) {
+		PassengerEntry entry = repo.findById(id)
+				.orElseThrow( () -> new ResourceNotFoundException("Entry Not found"));
+		mapper.map(dto, entry);
+		return mapper.map(entry, PassengerEntryRespDTO.class);
+	}
+
+	@Override
+	public PassengerEntryRespDTO getEntry(Long id) {
+		PassengerEntry entry = repo.findById(id).orElseThrow(()-> new ResourceNotFoundException("Entry Not Found"));
+		return mapper.map(entry, PassengerEntryRespDTO.class);
+	}
+
+	@Override
+	public List<PassengerEntryRespDTO> getAllEntries() {
+		return repo.findAll()
+				.stream()
+				.map(m -> mapper.map(m, PassengerEntryRespDTO.class))
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<PassengerEntryRespDTO> getActiveEntreis() {
+		return repo.findByEntryStatus(EntryStatus.ENTERED).stream().map(m->mapper.map(m, PassengerEntryRespDTO.class)).collect(Collectors.toList())
+		;		
+	}
+
+	@Override
+	public String deleteEntry(Long id) {
+		repo.deleteById(id);
+		return "Deleted success"; 
+	}
+
+}
